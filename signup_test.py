@@ -86,7 +86,6 @@ def test_signup_invalid_email(driver):
         invalid_signup_click = driver.find_element(By.LINK_TEXT, '회원가입')
         invalid_signup_click.click()
         print('회원가입 페이지 이동')
-        time.sleep(0.5)
 
         invalid_email = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID,'join-email-input'))
@@ -104,12 +103,31 @@ def test_signup_invalid_email(driver):
 
 # 유효하지 않은 비밀번호
 def test_signup_invalid_password(driver):
-    pass
+    driver.get('https://www.coupang.com/')
+
+    try:
+        invalid_signup_click = driver.find_element(By.LINK_TEXT, '회원가입')
+        invalid_signup_click.click()
+        print('회원가입 페이지 이동')
+
+        invalid_email = driver.find_element(By.ID, 'join-email-input')
+        invalid_email.send_keys('est123@test.com', Keys.TAB)
+        print('이메일 입력')
+
+        invalid_password = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'join-password-input'))
+        )  
+        invalid_password.send_keys('test123')
+        print('유효하지 않은 비밀번호 입력')
+
+    except Exception as e:
+        print(f'오류 발생 : {e}')
 
 
 # signup_test 파일을 직접 실행할 때만 테스트
 if __name__ == '__main__':
     # test_signup_success(driver)
     # test_signup_duplicate_email(driver)
-    test_signup_invalid_email(driver)
+    # test_signup_invalid_email(driver)
+    test_signup_invalid_password(driver)
     input()
