@@ -60,8 +60,10 @@ def test_signup_duplicate_email(driver):
     driver.get('https://www.coupang.com/')
 
     try: 
-        duplicate_signup_click = driver.find_element(By.LINK_TEXT, '회원가입')
-        duplicate_signup_click.click()
+        signup_click = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.LINK_TEXT, '회원가입'))
+        )
+        signup_click.click()
         print('회원가입 페이지 이동')
 
         duplicate_email = WebDriverWait(driver, 10).until(
@@ -73,6 +75,13 @@ def test_signup_duplicate_email(driver):
 
         duplicate_email.send_keys(Keys.TAB)
         print('TAB으로 비밀번호 칸 이동')
+
+        error_message = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, '.member__message-area.member__message-area--error'))
+        )
+
+        assert '이미 가입된 이메일 주소입니다.' in error_message.text
+        print('테스트 성공 : 정확한 에러 메시지가 노출 되었습니다.')
 
     except Exception as e:
         print(f'오류발생 : {e}')
@@ -136,7 +145,7 @@ def test_signup_invalid_password(driver):
 # signup_test 파일을 직접 실행할 때만 테스트
 if __name__ == '__main__':
     # test_signup_success(driver)
-    # test_signup_duplicate_email(driver)
-    test_signup_invalid_email(driver)
+    test_signup_duplicate_email(driver)
+    # test_signup_invalid_email(driver)
     # test_signup_invalid_password(driver)
     input()
