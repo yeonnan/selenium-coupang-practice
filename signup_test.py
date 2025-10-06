@@ -124,12 +124,16 @@ def test_signup_invalid_password(driver):
     driver.get('https://www.coupang.com/')
 
     try:
-        invalid_signup_click = driver.find_element(By.LINK_TEXT, '회원가입')
-        invalid_signup_click.click()
+        signup_click = WebDriverWait(driver, 10). until(
+            EC.element_to_be_clickable((By.LINK_TEXT, '회원가입'))
+        )
+        signup_click.click()
         print('회원가입 페이지 이동')
 
-        invalid_email = driver.find_element(By.ID, 'join-email-input')
-        invalid_email.send_keys('est123@test.com', Keys.TAB)
+        email_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'join-email-input'))
+        )
+        email_input.send_keys('est123@test.com', Keys.TAB)
         print('이메일 입력')
 
         invalid_password = WebDriverWait(driver, 10).until(
@@ -138,6 +142,16 @@ def test_signup_invalid_password(driver):
         invalid_password.send_keys('test123')
         print('유효하지 않은 비밀번호 입력')
 
+        error_message = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, '.member__input-guide-area'))
+        )
+
+        error_text = error_message.text
+        assert '영문/숫자/특수문자 2가지 이상 조합 (8~20자)' in error_text
+        assert '3개 이상 연속되거나 동일한 문자/숫자 제외' in  error_text
+        assert '아이디(이메일) 제외' in error_text
+        print('테스트 성공 : 모든 비밀번호 규칙 메시지가 정상적으로 노출되었습니다.')
+
     except Exception as e:
         print(f'오류 발생 : {e}')
 
@@ -145,7 +159,7 @@ def test_signup_invalid_password(driver):
 # signup_test 파일을 직접 실행할 때만 테스트
 if __name__ == '__main__':
     # test_signup_success(driver)
-    test_signup_duplicate_email(driver)
+    # test_signup_duplicate_email(driver)
     # test_signup_invalid_email(driver)
-    # test_signup_invalid_password(driver)
+    test_signup_invalid_password(driver)
     input()
