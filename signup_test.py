@@ -1,7 +1,6 @@
 # 회원가입
 
 import time
-from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,43 +15,57 @@ driver = get_stealth_driver()
 
 def test_signup_success(driver):
     driver.get('https://www.coupang.com/')
-    
-    signup_click = driver.find_element(By.LINK_TEXT, '회원가입')
-    signup_click.click()
-    print('회원가입 페이지 이동')
 
-    signup_email = driver.find_element(By.ID, 'join-email-input')
-    signup_email.send_keys('test@gmail.com')
-    print('이메일 작성')
+    try:
+        signup_click = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.LINK_TEXT, '회원가입'))
+        )
+        signup_click.click()
+        print('회원가입 페이지 이동')
 
-    signup_password = driver.find_element(By.ID, 'join-password-input')
-    signup_password.send_keys('Test12!34')
-    print('비밀번호 작성')
+        signup_email = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'join-email-input'))
+        )
+        signup_email.send_keys('test@gmail.com')
+        print('이메일 작성')
 
-    signup_password_confirm = driver.find_element(By.ID, 'join-password-again-input')
-    signup_password_confirm.send_keys('Test12!34')
-    print('비밀번호 확인 작성')
+        signup_password = driver.find_element(By.ID, 'join-password-input')
+        signup_password.send_keys('Test12!34')
+        print('비밀번호 작성')
 
-    signup_name = driver.find_element(By.ID, 'join-name-input')
-    signup_name.send_keys('안다연')
-    print('이름 작성')
+        signup_password_confirm = driver.find_element(By.ID, 'join-password-again-input')
+        signup_password_confirm.send_keys('Test12!34')
+        print('비밀번호 확인 작성')
 
-    signup_phone = driver.find_element(By.ID, 'join-phone-input')
-    signup_phone.send_keys('010-1234-5678')
-    print('전화번호 작성')
+        signup_name = driver.find_element(By.ID, 'join-name-input')
+        signup_name.send_keys('안다연')
+        print('이름 작성')
 
-    require_checkbox = driver.find_elements(By.CSS_SELECTOR, '.c-checkbox-item')
+        signup_phone = driver.find_element(By.ID, 'join-phone-input')
+        signup_phone.send_keys('010-1234-5678')
+        print('전화번호 작성')
 
-    for checkbox in require_checkbox:
-        if '[필수]' in checkbox.text:
-            checkbox.find_element(By.TAG_NAME, 'label').click()
-            time.sleep(0.5)
-    print('필수 체크박스 체크')
+        require_checkbox = driver.find_elements(By.CSS_SELECTOR, '.c-checkbox-item')
 
-    submit_button = driver.find_element(By.CSS_SELECTOR, '.join__button.join__button--blue-large-block._joinTrigger')
-    submit_button.click()
-    time.sleep(0.5)
-    print('버튼 클릭')
+        for checkbox in require_checkbox:
+            if '[필수]' in checkbox.text:
+                checkbox.find_element(By.TAG_NAME, 'label').click()
+                time.sleep(0.5)
+        print('필수 체크박스 체크')
+
+        submit_button = driver.find_element(By.CSS_SELECTOR, '.join__button.join__button--blue-large-block._joinTrigger')
+        submit_button.click()
+        time.sleep(0.5)
+        print('버튼 클릭')
+
+        signup_login_page = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'login-email-input'))
+        )
+        assert signup_login_page.is_displayed()
+        print('테스트 성공 : 회원가입 완료 후 로그인 페이지로 정상 이동했습니다.')
+
+    except Exception as e:
+        print(f'오류발생 : {e}')
 
 
 # 이미 가입된 이메일
@@ -108,11 +121,11 @@ def test_signup_invalid_email(driver):
         invalid_email.send_keys(Keys.TAB)
         print('TAB으로 비밀번호 칸 이동')
 
-        error_massage = WebDriverWait(driver, 10).until(
+        error_message = WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, '.member__message-area.member__message-area--error'))
         )
 
-        assert '이메일을 올바르게 입력해주세요.' in error_massage.text
+        assert '이메일을 올바르게 입력해주세요.' in error_message.text
         print('테스트 성공 : 정확한 에러 메시지가 노출 되었습니다.')
 
     except Exception as e:
