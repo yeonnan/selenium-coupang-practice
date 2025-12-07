@@ -1,4 +1,4 @@
-# Ecommerce E2E Test
+# selenium coupang practice
 
 ### 프로젝트 소개
 
